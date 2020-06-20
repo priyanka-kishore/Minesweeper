@@ -26,6 +26,10 @@ img {
     font-size: 15pt;
 }
 
+.reveal.no-bomb {
+    background-color: green;
+}
+
 .reveal.bomb {
     background-color: red;
 }
@@ -35,6 +39,3 @@ img {
     color: pink;
 } */
 
-.reveal {
-    background-color: blue;
-}

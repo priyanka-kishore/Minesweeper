@@ -44,14 +44,10 @@ export function createGrid(size) {
 
 export function addOnclicks() {
     for (var cell of cells) {
-        // console.log(cell)
-        var row = parseInt(cell.getAttribute('data-row'));
-        var col = parseInt(cell.getAttribute('data-col'));
-        console.log(row + '/' + col)
-
         cell.addEventListener('click', function() {
-            console.log('add listener col ' + col + ' row ' + row)
-            revealCell(row, col)
+            var row = parseInt(this.getAttribute('data-row'));
+            var col = parseInt(this.getAttribute('data-col'));
+            revealCell(row, col);
         }, false);
     }
 }
@@ -83,36 +79,20 @@ function placeBomb(row, col) {
 
 // ----------------- REVEAL FUNCTIONALITY -----------------
 
-function revealCell(row, col) {
-    // change classes of current 
-    // go into css and change reveal settings
-    let unknownCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
-    console.log('revealing col ' + col + ' row ' + row)
-
-    if (unknownCell.classList.contains('bomb')) {
-        unknownCell.classList.remove('no-reveal');
-        unknownCell.classList.add('reveal');
-    } else if (unknownCell.classList.contains('no-bomb')) {
-        unknownCell.classList.remove('no-bomb');
-        unknownCell.classList.add('bomb');
-    }
-}
-
 /**
- * Reveal bomb after clicked.
+ * Reveal cell dependent on if it's a bomb or clear by changing classes
  * 
  * @param {number} row  Number of row from top
- * @param {number} col  Number of col from left
+ * @param {number} col  Number of col from left 
  */
-function revealBomb(row, col) {
-    console.log('Revealing bomb (col: ' + col + ', row: ' + row + ')');
-    let bombCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
-    
-    if (bombCell.classList.contains('no-reveal')) {
-        bombCell.classList.remove('no-reveal');
-        bombCell.classList.add('reveal');
+function revealCell(row, col) {
+    let unknownCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
 
-        bombCell.innerHTML = '<img src="/assets/bomb.svg" alt="Image of bomb"></img>'
+    unknownCell.classList.remove('no-reveal');
+    unknownCell.classList.add('reveal');
+
+    if (unknownCell.classList.contains('bomb')) {
+        unknownCell.innerHTML = '<img src="/assets/bomb.svg" alt="Image of bomb"></img>'
     }
 }
 
@@ -135,9 +115,7 @@ function getSurroundingMines(row, col) {
         if (!cell.classList.contains('bomb')) {
 
         }
-
     }
     
-
-    return '69'
+    return ':)'
 }
