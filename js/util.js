@@ -1,9 +1,3 @@
-function hi() {
-    console.log('hi from functions.js')
+export function getRandomNumber(gridSize) {
+    return Math.floor(Math.random() * gridSize) + 1;
 }
-
-function bye() {
-    console.log('bye form functions.js')
-}
-
-export {hi, bye}
