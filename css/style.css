@@ -5,23 +5,14 @@
 }
 
 .cell {
-    /* border: 1px solid gray;
-    min-width: 20px;
-    min-height: 20px;
-    display: inline-block;
-*/
-    /* margin-right: 2px; */
-    
-    border: 1px solid white;
-    display: inline-block;
-
-    /* float: left; */
-    width: 30px;
-    height: 30px;
-    background-color: #999;
+    border: 1px solid rgb(255, 255, 255);
+    width: 40px;
+    height: 40px;
+    background-color: rgb(165, 87, 255);
     font-size:50px;
     text-align:center;
-    /* display: table-cell; */
-    /* vertical-align:middle; */
+    display: table-cell;
+    vertical-align:middle;
 
+    font-size: 15pt;
 }
