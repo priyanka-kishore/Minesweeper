@@ -4,15 +4,10 @@ const grid = document.getElementById('grid');
 let rows = document.getElementsByClassName('gridRow');
 let cells = document.getElementsByClassName('cell');
 let gridSize = 0;
-
-// ---------------------------------------------------
-/* TODO:
-    [ ] show stats
-    [ ] show how many bombs left
-    [ ] recursive reveal when click cell with '0' surrounding
-    [ ] enable flags for suspected bombs
-*/
-// ---------------------------------------------------
+let totalBombs = 0;
+let bombsRevealed = 0;
+let safeCells;
+let cellsClicked = 0;
 
 export function createGrid(size) {
     console.log("Creating grid...")
@@ -41,10 +36,25 @@ export function createGrid(size) {
 
 export function addOnclicks() {
     for (var cell of cells) {
-        cell.addEventListener('click', function() {
+        // listen for left clicks
+        cell.addEventListener('click', cell.clickHandler = function clickHandler() {
             var row = parseInt(this.getAttribute('data-row'));
             var col = parseInt(this.getAttribute('data-col'));
             revealCell(row, col);
+
+            this.removeEventListener('click', clickHandler);
+            this.removeEventListener('contextmenu', cell.flagHandler);
+        }, false);
+
+        // listen for right clicks
+        cell.addEventListener('contextmenu', cell.flagHandler = function flagHandler(ev) {
+            ev.preventDefault();
+            
+            var row = parseInt(this.getAttribute('data-row'));
+            var col = parseInt(this.getAttribute('data-col'));
+            util.toggleFlag(row, col);
+            
+            return false;
         }, false);
     }
 }
@@ -59,7 +69,9 @@ export function setInnerHTMLs() {
 // ----------------- BOMB FUNCTIONALITY -----------------
 
 export function generateBombs(numBombs) {
-   console.log("Generating " + numBombs + " bombs...");
+    totalBombs = numBombs;
+    safeCells = cells.length - numBombs;
+    console.log("Generating " + numBombs + " bombs...");
    
 //    $('#numBombs').innerHTML = 'There are ' + numBombs + ' bombs!'
     document.getElementById('numBombs').innerHTML = 'There are ' + numBombs + ' bombs!';
@@ -90,12 +102,17 @@ function placeBomb(row, col) {
 function revealCell(row, col) {
     let unknownCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
 
+    if (unknownCell.classList.contains('bomb')) {
+        unknownCell.innerHTML = '<img src="./assets/bomb.png" alt="Image of bomb"></img>'
+        bombsRevealed++;
+    } else if (unknownCell.classList.contains('no-bomb') && unknownCell.classList.contains('no-reveal')){
+        cellsClicked++;
+    }
+    
     unknownCell.classList.remove('no-reveal');
     unknownCell.classList.add('reveal');
 
-    if (unknownCell.classList.contains('bomb')) {
-        unknownCell.innerHTML = '<img src="./assets/bomb.png" alt="Image of bomb"></img>'
-    }
+    checkGameStatus();
 }
 
 // Determine number of bombs surrounding the cell with given parameters.
@@ -114,4 +131,29 @@ function getNumMines(row, col) {
     }
 
     return total;
+}
+
+function checkGameStatus() {
+    var count = document.getElementById('count');
+
+    if (bombsRevealed == totalBombs) { // game over
+        count.innerHTML = 'GAME OVER :(';
+        for (var cell of cells) {
+            if (cell.classList.contains('no-reveal')) {
+                cell.removeEventListener('click', cell.clickHandler);
+                cell.removeEventListener('contextmenu', cell.flagHandler);
+            }
+        }
+    } else if (cellsClicked < safeCells && bombsRevealed < totalBombs) { // still playing
+        count.innerHTML = 'Revealed ' + bombsRevealed + '/' + totalBombs;
+    } else if (cellsClicked == safeCells && bombsRevealed < totalBombs) {
+        count.innerHTML = 'YOU WIN!'
+
+        for (var cell of cells) {
+            if (cell.classList.contains('no-reveal')) {
+                cell.removeEventListener('click', cell.clickHandler);
+                cell.removeEventListener('contextmenu', cell.flagHandler);
+            }
+        }
+    }
 }

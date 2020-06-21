@@ -34,3 +34,7 @@ img {
 .reveal.bomb {
     background-color: red;
 }
+
+.flag {
+    background-color: yellow;
+}
