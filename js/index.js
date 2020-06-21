@@ -6,38 +6,35 @@ let cells = document.getElementsByClassName('cell');
 let gridSize = 0;
 
 // ---------------------------------------------------
-
-// beginner:       10 mines, 8x8, 9x9, 10x10
-// intermediate:   40 mines, 13x15 to 16x16
-// expert:         99 mines, 16x30
+/* TODO:
+    [ ] show stats
+    [ ] show how many bombs left
+    [ ] recursive reveal when click cell with '0' surrounding
+    [ ] enable flags for suspected bombs
+*/
+// ---------------------------------------------------
 
 export function createGrid(size) {
     console.log("Creating grid...")
     gridSize = size;
 
-    for (var i = 0; i < gridSize; i++) {
+    for (var i = 1; i <= gridSize; i++) {
         // create row
         let currRow = document.createElement('div');
         grid.appendChild(currRow).className = 'gridRow';
 
         // create cells in current row
-        for (var j = 0; j < gridSize; j++) {
+        for (var j = 1; j <= gridSize; j++) {
             let newCell = document.createElement('div');
             
-            // '0' = empty, 'n' = num of surrounding bombs, 'B' = bomb
-            newCell.innerHTML = '0';
-
             // classes = cell, no-bomb/bomb, no-reveal/reveal
             newCell.className = 'cell no-bomb no-reveal'
 
             // set attr to easily identify location of cell
-            newCell.setAttribute('data-col', j + 1);
-            newCell.setAttribute('data-row', i + 1);
+            newCell.setAttribute('data-col', j);
+            newCell.setAttribute('data-row', i);
             
             currRow.appendChild(newCell);
-
-            // add event to click
-            // newCell.addEventListener('click', revealCell(i + 1, j + 1), false);
         }
     }
 }
@@ -52,17 +49,25 @@ export function addOnclicks() {
     }
 }
 
+export function setInnerHTMLs() {
+    for (var cell of cells) {
+        var row = cell.getAttribute('data-row');
+        var col = cell.getAttribute('data-col');
+        cell.innerHTML = getNumMines(row, col);
+    }
+}
 // ----------------- BOMB FUNCTIONALITY -----------------
 
 export function generateBombs(numBombs) {
-   console.log("Generating " + numBombs + " bombs..."); 
+   console.log("Generating " + numBombs + " bombs...");
 
     // randomly place bombs
     for (var i = 0; i < numBombs; i++) {
-        let row = util.getRandomNumber(gridSize); // col (left, right)
-        let col = util.getRandomNumber(gridSize); // row (up, down)
+        let x = util.getRandomNumber(gridSize);
+        let y = util.getRandomNumber(gridSize);
 
-        placeBomb(row, col);
+        // avoid duplicate bombs
+        !$(".cell[data-row='" + x +"'][data-col='" + y +"']")[0].classList.contains('bomb') ? placeBomb(x, y) : i--;
     }
 }
 
@@ -73,18 +78,12 @@ function placeBomb(row, col) {
     if (bombCell.classList.contains('no-bomb')) {
         bombCell.classList.remove('no-bomb');
         bombCell.classList.add('bomb');
-        // revealBomb(row, col);
     }
 }
 
 // ----------------- REVEAL FUNCTIONALITY -----------------
 
-/**
- * Reveal cell dependent on if it's a bomb or clear by changing classes
- * 
- * @param {number} row  Number of row from top
- * @param {number} col  Number of col from left 
- */
+// Reveal cell dependent on if it's a bomb or clear by changing classes
 function revealCell(row, col) {
     let unknownCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
 
@@ -96,26 +95,20 @@ function revealCell(row, col) {
     }
 }
 
-/**
- * Determine number of bombs surrounding the cell with given parameters.
- * 
- * @param {number} row  Number of row from top
- * @param {number} col  Number of col from left
- */
-function getSurroundingMines(row, col) {
-    let numMines = 0;
-    const coords = [[-1,-1], [-1,0], [-1,1],
-                    [0,-1],          [0,1],
-                    [1,-1], [1,0], [1,1]];
-    let bombCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0]; 
+// Determine number of bombs surrounding the cell with given parameters.
+function getNumMines(row, col) {
+    let total = 0;
+    const coordinates = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1], [1,0], [1,1]];
 
-    for (var check of coords) {
-        let cell = $(".cell[data-row='" + check[0] +"'][data-col='" + check[1] +"']")[0];
+    for (var coord of coordinates) {
+        let newRow = coord[0] + parseInt(row);
+        let newCol = coord[1] + parseInt(col);
 
-        if (!cell.classList.contains('bomb')) {
-
+        if (util.inGrid(newRow, newCol, gridSize)) {
+            let curr = $(".cell[data-row='" + newRow +"'][data-col='" + newCol +"']")[0];
+            if (curr.classList.contains('bomb')) total += 1;
         }
     }
-    
-    return ':)'
+
+    return total;
 }

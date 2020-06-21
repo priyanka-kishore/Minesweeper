@@ -4,10 +4,6 @@
     cursor: default;
 }
 
-#grid {
-
-}
-
 img {
     width: 60%;
 }
@@ -26,16 +22,15 @@ img {
     font-size: 15pt;
 }
 
+.no-reveal {
+    font-size: 0;
+}
+
 .reveal.no-bomb {
     background-color: green;
+    font-size: 15pt;
 }
 
 .reveal.bomb {
     background-color: red;
 }
-
-/* .no-reveal {
-    font-size: 10px;
-    color: pink;
-} */
-
