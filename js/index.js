@@ -60,6 +60,9 @@ export function setInnerHTMLs() {
 
 export function generateBombs(numBombs) {
    console.log("Generating " + numBombs + " bombs...");
+   
+//    $('#numBombs').innerHTML = 'There are ' + numBombs + ' bombs!'
+    document.getElementById('numBombs').innerHTML = 'There are ' + numBombs + ' bombs!';
 
     // randomly place bombs
     for (var i = 0; i < numBombs; i++) {
