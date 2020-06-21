@@ -1,5 +1,7 @@
 # Minesweeper
 
+Check it out: https://priyanka-kishore.github.io/Minesweeper/
+
 ## TODO:
 - [ ] show stats
 - [ ] show how many bombs left
