@@ -91,7 +91,7 @@ function revealCell(row, col) {
     unknownCell.classList.add('reveal');
 
     if (unknownCell.classList.contains('bomb')) {
-        unknownCell.innerHTML = '<img src="./assets/bomb.svg" alt="Image of bomb"></img>'
+        unknownCell.innerHTML = '<img src="./assets/bomb.png" alt="Image of bomb"></img>'
     }
 }
 
