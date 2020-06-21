@@ -38,3 +38,13 @@ img {
 .flag {
     background-color: yellow;
 }
+
+#win {
+    color: green;
+    font-size: 30pt;
+}
+
+#lose {
+    color: red;
+    font-size: 30pt;
+}

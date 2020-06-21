@@ -1,6 +1,7 @@
 import * as util from './util.js'
 
 const grid = document.getElementById('grid');
+const coordinates = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1], [1,0], [1,1]];
 let rows = document.getElementsByClassName('gridRow');
 let cells = document.getElementsByClassName('cell');
 let gridSize = 0;
@@ -113,12 +114,27 @@ function revealCell(row, col) {
     unknownCell.classList.add('reveal');
 
     checkGameStatus();
+    
+    //TODO -- recursively reveal all nearby 0 cells
+    if (unknownCell.innerHTML == '0') {
+        console.log('this is a 0 cell');
+
+        for (var coord of coordinates) { // for each surrounding cell
+            let newRow = coord[0] + parseInt(row);
+            let newCol = coord[1] + parseInt(col);
+    
+            let curr = $(".cell[data-row='" + newRow +"'][data-col='" + newCol +"']")[0];
+
+            if (curr && util.inGrid(newRow, newCol, gridSize) && curr.innerHTML == '0' && curr.classList.contains('no-reveal')) { 
+                revealCell(newRow, newCol);
+            }
+        }
+    }
 }
 
 // Determine number of bombs surrounding the cell with given parameters.
 function getNumMines(row, col) {
     let total = 0;
-    const coordinates = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1], [1,0], [1,1]];
 
     for (var coord of coordinates) {
         let newRow = coord[0] + parseInt(row);
@@ -137,7 +153,8 @@ function checkGameStatus() {
     var count = document.getElementById('count');
 
     if (bombsRevealed == totalBombs) { // game over
-        count.innerHTML = 'GAME OVER :(';
+        count.innerHTML = '';
+        document.getElementById('lose').innerHTML = 'GAME OVER :(';
         for (var cell of cells) {
             if (cell.classList.contains('no-reveal')) {
                 cell.removeEventListener('click', cell.clickHandler);
@@ -146,8 +163,9 @@ function checkGameStatus() {
         }
     } else if (cellsClicked < safeCells && bombsRevealed < totalBombs) { // still playing
         count.innerHTML = 'Revealed ' + bombsRevealed + '/' + totalBombs;
-    } else if (cellsClicked == safeCells && bombsRevealed < totalBombs) {
-        count.innerHTML = 'YOU WIN!'
+    } else if (cellsClicked == safeCells && bombsRevealed < totalBombs) { // you win
+        count.innerHTML = '';
+        document.getElementById('win').innerHTML = 'YOU WIN!';
 
         for (var cell of cells) {
             if (cell.classList.contains('no-reveal')) {
