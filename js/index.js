@@ -133,7 +133,7 @@ function revealCell(row, col) {
     
             let curr = $(".cell[data-row='" + newRow +"'][data-col='" + newCol +"']")[0];
 
-            if (curr && util.inGrid(newRow, newCol, gridSize) /*&& curr.innerHTML == '0'*/ && curr.classList.contains('no-reveal')) { 
+            if (curr && util.inGrid(newRow, newCol, gridSize) && curr.classList.contains('no-reveal')) { 
                 revealCell(newRow, newCol);
             }
         }
