@@ -53,7 +53,7 @@ export function addOnclicks() {
             
             var row = parseInt(this.getAttribute('data-row'));
             var col = parseInt(this.getAttribute('data-col'));
-            util.toggleFlag(row, col);
+            toggleFlag(row, col);
             
             return false;
         }, false);
@@ -113,9 +113,17 @@ function revealCell(row, col) {
     unknownCell.classList.remove('no-reveal');
     unknownCell.classList.add('reveal');
 
+    
+    if (unknownCell.classList.contains('flag')) {
+        unknownCell.classList.remove('flag');
+        unknownCell.innerHTML = getNumMines(row, col);
+    }
+
+    unknownCell.removeEventListener('contextmenu', unknownCell.flagHandler);
+
     checkGameStatus();
     
-    //TODO -- recursively reveal all nearby 0 cells
+    // Recursively reveal adjacent 0's and immediate cells
     if (unknownCell.innerHTML == '0') {
         console.log('this is a 0 cell');
 
@@ -125,7 +133,7 @@ function revealCell(row, col) {
     
             let curr = $(".cell[data-row='" + newRow +"'][data-col='" + newCol +"']")[0];
 
-            if (curr && util.inGrid(newRow, newCol, gridSize) && curr.innerHTML == '0' && curr.classList.contains('no-reveal')) { 
+            if (curr && util.inGrid(newRow, newCol, gridSize) /*&& curr.innerHTML == '0'*/ && curr.classList.contains('no-reveal')) { 
                 revealCell(newRow, newCol);
             }
         }
@@ -173,5 +181,18 @@ function checkGameStatus() {
                 cell.removeEventListener('contextmenu', cell.flagHandler);
             }
         }
+    }
+}
+
+// TODO: fix when theres a flag, and click to reveal number
+function toggleFlag(row, col) {
+    let cell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
+
+    if (cell.classList.contains('flag')) {
+        cell.classList.remove('flag')
+        cell.innerHTML = '';
+    } else {
+        cell.classList.add('flag');
+        cell.innerHTML = '<img src="./assets/flag.png" alt="Image of flag"></img>'
     }
 }
