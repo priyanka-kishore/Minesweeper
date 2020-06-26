@@ -12,3 +12,4 @@ Check it out: https://priyanka-kishore.github.io/Minesweeper/
 - [X] Option to restart game
 - [ ] Option for timer maybe? (extra feature)
 - [ ] Option to keep playing either past 1 bomb reveal or until 1 bomb reveal (original gameplay)
+- [ ] Show bomb image when initially flagged, but then clicked
