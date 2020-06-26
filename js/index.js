@@ -103,36 +103,35 @@ function placeBomb(row, col) {
 function revealCell(row, col) {
     let unknownCell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
 
+    // if cell is bomb
     if (unknownCell.classList.contains('bomb')) {
         unknownCell.innerHTML = '<img src="./assets/bomb.png" alt="Image of bomb"></img>'
         bombsRevealed++;
     } else if (unknownCell.classList.contains('no-bomb') && unknownCell.classList.contains('no-reveal')){
         cellsClicked++;
     }
-    
-    unknownCell.classList.remove('no-reveal');
-    unknownCell.classList.add('reveal');
 
-    
-    if (unknownCell.classList.contains('flag')) {
+    // if cell is flagged
+    if (unknownCell.classList.contains('flag') && unknownCell.classList.contains('no-bomb')) {
         unknownCell.classList.remove('flag');
         unknownCell.innerHTML = getNumMines(row, col);
     }
 
+    // change class of revealed cell
+    unknownCell.classList.remove('no-reveal');
+    unknownCell.classList.add('reveal');
     unknownCell.removeEventListener('contextmenu', unknownCell.flagHandler);
 
-    checkGameStatus();
+    checkGameStatus(); // check if game still continues or not after revealing cell
     
     // Recursively reveal adjacent 0's and immediate cells
     if (unknownCell.innerHTML == '0') {
-        console.log('this is a 0 cell');
-
         for (var coord of coordinates) { // for each surrounding cell
             let newRow = coord[0] + parseInt(row);
             let newCol = coord[1] + parseInt(col);
-    
             let curr = $(".cell[data-row='" + newRow +"'][data-col='" + newCol +"']")[0];
 
+            // reveal cell if exists, within grid, and has not been revealed
             if (curr && util.inGrid(newRow, newCol, gridSize) && curr.classList.contains('no-reveal')) { 
                 revealCell(newRow, newCol);
             }
@@ -160,18 +159,23 @@ function getNumMines(row, col) {
 function checkGameStatus() {
     var count = document.getElementById('count');
 
-    if (bombsRevealed == totalBombs) { // game over
+    // status = still playing
+    if (cellsClicked < safeCells && bombsRevealed < totalBombs) {
+        count.innerHTML = 'Revealed ' + bombsRevealed + '/' + totalBombs;
+    // status = player loses
+    } else if (bombsRevealed == totalBombs) {
         count.innerHTML = '';
         document.getElementById('lose').innerHTML = 'GAME OVER :(';
+
+        // remove flag toggle from all cells
         for (var cell of cells) {
             if (cell.classList.contains('no-reveal')) {
                 cell.removeEventListener('click', cell.clickHandler);
                 cell.removeEventListener('contextmenu', cell.flagHandler);
             }
         }
-    } else if (cellsClicked < safeCells && bombsRevealed < totalBombs) { // still playing
-        count.innerHTML = 'Revealed ' + bombsRevealed + '/' + totalBombs;
-    } else if (cellsClicked == safeCells && bombsRevealed < totalBombs) { // you win
+    // status = player wins
+    } else if (cellsClicked == safeCells && bombsRevealed < totalBombs) {
         count.innerHTML = '';
         document.getElementById('win').innerHTML = 'YOU WIN!';
 
@@ -184,7 +188,6 @@ function checkGameStatus() {
     }
 }
 
-// TODO: fix when theres a flag, and click to reveal number
 function toggleFlag(row, col) {
     let cell = $(".cell[data-row='" + row +"'][data-col='" + col +"']")[0];
 
